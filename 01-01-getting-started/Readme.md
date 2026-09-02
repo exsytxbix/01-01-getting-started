@@ -1,67 +1,83 @@
 # Git
+### Kontrollfragen
 
-Git ist ein verteiltes Versionskontrollsystem, das Änderungen an Dateien und Code über die Zeit verfolgt.
+- Was bedeutet das **U** bzw. das **M** neben einer Datei in der Quellcodeverwaltung?
+- Warum braucht jeder Commit eine Nachricht?
+- Welchen Git-Befehlen entsprechen die Buttons **Repository initialisieren**, **+** und **Commit**?
 
-## Was Git macht:
-- Erfasst die Historie aller Änderungen an deinen Dateien
-- Ermöglicht es dir, an verschiedenen Versionen (Branches) gleichzeitig zu arbeiten
-- Erlaubt mehreren Personen, an einem Projekt zusammenzuarbeiten
-- Ermöglicht es dir, auf frühere Versionen zurückzukehren, falls nötig
+## GitHub per SSH verbinden - ganz einfach
 
-## Wichtige Konzepte:
-- **Repository**: Ein Ordner, der dein Projekt und seine komplette Historie enthält
-- **Commit**: Ein Schnappschuss deiner Änderungen mit einer Nachricht, die beschreibt, was sich geändert hat
-- **Branch**: Eine parallele Version deines Codes (nützlich für die Arbeit an Features separat)
-- **Merge**: Zusammenführung von Änderungen aus einem Branch in einen anderen
-- **Remote**: Eine Kopie deines Repositorys auf einem Server (wie GitHub, GitLab)
+SSH ist eine sichere Verbindung zwischen deinem Computer und GitHub. Du musst dein Passwort dann nicht bei jedem `push` eingeben.
 
-## Häufige Anwendungsfälle:
-- Sicherung deiner Arbeit
-- Zusammenarbeit mit Teamkollegen
-- Verfolgung, wer was und wann geändert hat
-- Verwaltung verschiedener Versionen deines Projekts
+### 1. Neues Repository auf GitHub erstellen
 
-Git ist der Industriestandard für Versionskontrolle und wird in praktisch allen professionellen Softwareentwicklungsprojekten verwendet.
+1. Gehe zu [github.com](https://github.com) und melde dich an.
+2. Klicke oben rechts auf **+** und dann auf **New repository**.
+3. Vergib einen Namen, z. B. `mein-erstes-repo`.
+4. Klicke auf **Create repository**.
+5. Lasse **README**, `.gitignore` und **License** zunächst leer. Dein lokales Projekt hat bereits Dateien.
 
+### 2. SSH-Schlüssel erstellen
 
+Öffne in VS Code das Terminal über **Terminal -> Neues Terminal** und führe diesen Befehl aus. Ersetze die E-Mail-Adresse durch die E-Mail-Adresse deines GitHub-Kontos:
 
-
-## 🎯 Erste Aufgabe für Anfänger
-
-Versuche diese einfachen Schritte in deinem Terminal:
-
-### Schritt 1: Repository initialisieren
 ```bash
-git init mein-projekt
-cd mein-projekt
+ssh-keygen -t ed25519 -C "deine-email@example.com"
 ```
 
-### Schritt 2: Erste Datei erstellen
+Drücke bei der Frage nach dem Speicherort einfach **Enter**. Danach kannst du ein Passwort für den Schlüssel festlegen. Wenn du keines möchtest, drücke zweimal **Enter**.
+
+### 3. SSH-Schlüssel bei GitHub hinterlegen
+
+Starte den SSH-Agenten und füge deinen Schlüssel hinzu:
+
 ```bash
-echo "Hallo Git!" > hello.txt
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
 ```
 
-### Schritt 3: Status überprüfen
-```bash
-git status
-```
-Du solltest sehen, dass `hello.txt` als "untracked" aufgelistet ist.
+Kopiere nun deinen öffentlichen Schlüssel in die Zwischenablage:
 
-### Schritt 4: Datei hinzufügen (staging)
 ```bash
-git add hello.txt
+pbcopy < ~/.ssh/id_ed25519.pub
 ```
 
-### Schritt 5: Commit erstellen
+Gehe anschließend auf GitHub zu **Profilbild -> Settings -> SSH and GPG keys -> New SSH key**. Vergib bei **Title** z. B. `Mein Mac`, füge den kopierten Schlüssel bei **Key** ein und klicke auf **Add SSH key**.
+
+### 4. Verbindung testen
+
 ```bash
-git config user.name "Dein Name"
-git config user.email "deine@email.com"
-git commit -m "Mein erster Commit: hello.txt hinzugefügt"
+ssh -T git@github.com
 ```
 
-### Schritt 6: Verlauf anschauen
+Beim ersten Mal fragt GitHub, ob du der Verbindung vertraust. Tippe `yes` und drücke **Enter**. Eine Nachricht wie `Hi dein-benutzername!` bedeutet, dass die Verbindung funktioniert.
+
+### 5. Lokales Repository mit GitHub verbinden
+
+Ersetze `DEIN-BENUTZERNAME` und `mein-erstes-repo` durch deine eigenen Werte. Führe die Befehle im Projektordner aus:
+
+**So findest du die beiden Werte:**
+
+- **Benutzername:** Klicke auf GitHub oben rechts auf dein Profilbild. Dein Benutzername steht unter deinem Namen und auch in deiner Profiladresse, zum Beispiel `github.com/tobias123`.
+- **Repository-Name:** Öffne auf GitHub dein Repository. Der Name steht oben auf der Seite, zum Beispiel `mein-erstes-repo`. Er ist normalerweise auch der Name deines lokalen Projektordners.
+- **Am einfachsten:** Öffne dein Repository auf GitHub, klicke auf **Code**, wähle **SSH** und klicke auf das Kopier-Symbol. Dann musst du den SSH-Link nicht selbst zusammensetzen.
+
 ```bash
-git log
+git remote add origin git@github.com:exsytxbix/01-01-getting-started.git
+git branch -M main
+git push -u origin main
 ```
 
-**Glückwunsch! Du hast deinen ersten Git Commit gemacht!** 🎉
+Danach ist dein lokales Repository mit GitHub verbunden. Weitere Änderungen kannst du normalerweise so hochladen:
+
+```bash
+git add .
+git commit -m "Beschreibung der Änderung"
+git push
+```
+
+Den SSH-Link findest du auf der GitHub-Seite deines Repositorys über **Code -> SSH**. Er sieht ungefähr so aus:
+
+```text
+git@github.com:exsytxbix/01-01-getting-started.git
+```
